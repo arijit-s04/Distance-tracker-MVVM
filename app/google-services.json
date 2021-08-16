@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "750218446777",
+    "project_id": "distance-tracker-app-63ebc",
+    "storage_bucket": "distance-tracker-app-63ebc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:750218446777:android:adae1c6be333ccad44d868",
+        "android_client_info": {
+          "package_name": "com.android.arijit.firebase.walker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "750218446777-09miethndob9edb66a8i4v7l923unh8q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbA0Rp8vUPNWiHOeAQQSKyBmYsULaYprM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "750218446777-09miethndob9edb66a8i4v7l923unh8q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

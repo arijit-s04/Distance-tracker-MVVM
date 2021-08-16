@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Distance Tracker</string>
+    <string name="title_home">Home</string>
+    <string name="title_history">History</string>
+    <string name="title_settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="gps_not_enabled">Please enable location services for app to work properly</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="tag">A simple way to keep track of your path</string>
+    <string name="title_activity_splash">FullscreenActivity</string>
+</resources>
