@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="18dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/item_view_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="13 Jun 2021"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:padding="8dp"
+                android:fontFamily="monospace"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                />
+
+            <ImageView
+                android:id="@+id/item_view_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_circular"
+                android:padding="8dp"
+                android:src="@drawable/ic_outline_delete_forever_24"
+                app:tint="@color/danger_red"
+                android:tooltipText="Delete"/>
+        </LinearLayout>
+
+        <TextView
+        android:id="@+id/item_view_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4:31 am"
+        android:fontFamily="monospace"
+        android:padding="8dp"
+        />
+    <TextView
+        android:id="@+id/item_view_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constrainedWidth="true"
+        android:text="Distance travelled : 0.00 m"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:fontFamily="@font/actor"
+        android:padding="8dp"
+        />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
