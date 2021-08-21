@@ -1,4 +1,4 @@
-package com.android.arijit.firebase.walker;
+package com.android.arijit.firebase.walker.utils;
 
 import com.google.android.gms.maps.model.LatLng;
 

@@ -1,4 +1,4 @@
-package com.android.arijit.firebase.walker;
+package com.android.arijit.firebase.walker.views;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,7 +10,6 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,8 +21,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.arijit.firebase.walker.AccountActivity;
+import com.android.arijit.firebase.walker.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
@@ -111,6 +111,8 @@ public class SettingsFragment extends Fragment {
     public static float CAMERA_ZOOM=16;
     public static float CAMERA_TILT=0;
     public static float CAMERA_BEARING=0;
+    public static final float DEFAULT_ZOOM = 16f;
+    public static final int DEFAULT_COUNT_DOWN = 3;
 
     private AutoCompleteTextView myDropDwn;
     private AutoCompleteTextView myDropDwn2;

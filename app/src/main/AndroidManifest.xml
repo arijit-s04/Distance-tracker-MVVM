@@ -34,7 +34,7 @@
 
         <activity android:name=".MainActivity" />
 
-        <service android:name=".ForegroundService" />
+        <service android:name=".models.ForegroundService" />
     </application>
 
 </manifest>

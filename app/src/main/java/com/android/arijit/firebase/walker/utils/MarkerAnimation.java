@@ -1,10 +1,11 @@
-package com.android.arijit.firebase.walker;
+package com.android.arijit.firebase.walker.utils;
 
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.android.arijit.firebase.walker.views.HomeFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
