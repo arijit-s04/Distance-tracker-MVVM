@@ -31,7 +31,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -117,7 +116,6 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback,
             binding.recView.setVisibility(View.VISIBLE);
             if(resultDataArrayList != null){
                 ResultDataAdapter mAdapter = new ResultDataAdapter(getContext(),
-                        binding.getRoot(),
                         resultDataArrayList, HistoryFragment.this, this.firebaseResultListener);
                 binding.recView.setAdapter(mAdapter);
             }
