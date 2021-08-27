@@ -1,11 +1,13 @@
-package com.android.arijit.firebase.walker;
+package com.android.arijit.firebase.walker.models;
+
+import static com.android.arijit.firebase.walker.views.SettingsFragment.distanceFormat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -19,37 +21,31 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.MutableLiveData;
+import androidx.core.content.ContextCompat;
 
+import com.android.arijit.firebase.walker.MainActivity;
+import com.android.arijit.firebase.walker.R;
+import com.android.arijit.firebase.walker.viewmodel.LocationViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.android.arijit.firebase.walker.SettingsFragment.distanceFormat;
-
 public class ForegroundService extends Service {
-    /**
-     * data members
-     */
-    private String TAG = "ForegroundService";
-    private Handler handler = new Handler();
+
+    private static final String TAG = "ForegroundService";
+    private final Handler handler = new Handler();
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
     private FusedLocationProviderClient providerClient;
     private float totDistTravelled;
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;
-    public static MutableLiveData<Float> distInMetre = new MutableLiveData<>();
-    public static MutableLiveData<ArrayList<LatLng>> curGotPosition = new MutableLiveData<>();
-    public static ResultData result;
-
+    public static final LocationViewModel locationViewModel = new LocationViewModel();
 
     /**
      * methods
@@ -57,11 +53,11 @@ public class ForegroundService extends Service {
 
     private void initialize(){
         totDistTravelled = 0.00f;
-        distInMetre.setValue(totDistTravelled);
-        curGotPosition.setValue(new ArrayList<>());
+        locationViewModel.setDistInMetre(totDistTravelled);
+        locationViewModel.setCurGotPosition(new ArrayList<>());
+        locationViewModel.setResultData(new ResultData());
         providerClient = LocationServices.getFusedLocationProviderClient(this);
         mNotificationManager = getSystemService(NotificationManager.class);
-        result = new ResultData();
     }
 
 
@@ -78,10 +74,11 @@ public class ForegroundService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        @SuppressLint("UnspecifiedImmutableFlag")
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mNotificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setColor(getResources().getColor(R.color.green_300))
+                .setColor(ContextCompat.getColor(this, R.color.green_300))
                 .setSmallIcon(R.drawable.ic_baseline_directions_24)
                 .setContentTitle("Tracking in progress...")
                 .setContentText(distanceFormat(totDistTravelled))
@@ -95,7 +92,6 @@ public class ForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        result = null;
         stopTrack();
         handler.removeCallbacksAndMessages(null);
         getSystemService(NotificationManager.class).cancel(1);
@@ -120,7 +116,7 @@ public class ForegroundService extends Service {
     }
 
     private void startTrack(){
-        /**
+        /*
          * providerClient to provide location service
          */
         LocationRequest locationRequest = LocationRequest.create();
@@ -128,15 +124,12 @@ public class ForegroundService extends Service {
         locationRequest.setInterval(3000);
         locationRequest.setSmallestDisplacement(3f);
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (ActivityCompat.checkSelfPermission(ForegroundService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(ForegroundService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                providerClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        handler.post(() -> {
+            if (ActivityCompat.checkSelfPermission(ForegroundService.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(ForegroundService.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
             }
+            providerClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         });
 
     }
@@ -145,45 +138,42 @@ public class ForegroundService extends Service {
     }
 
 
-    //=============
+    /**
+     *  callback on getting location
+     */
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
             List<Location> locationList = locationResult.getLocations();
-            for (Location le:locationList){
-                if(le == null)
+            for (Location le:locationList) {
+                if (le == null)
                     continue;
-                double lat = le.getLatitude(), lng = le.getLongitude();
-                LatLng pos = new LatLng(lat, lng);
-                Log.i(TAG, "service onLocationResult: "+lat+"+"+lng);
-
-                if(curGotPosition.getValue().isEmpty()){
-                    ArrayList<LatLng> tmp = curGotPosition.getValue();
-                    tmp.add(pos);
-                    curGotPosition.postValue(tmp);
-                }
-                else{
-                    LatLng lastCoor = curGotPosition.getValue().get(curGotPosition.getValue().size() - 1);
-                    Location lastLoc = new Location("");
-                    lastLoc.setLatitude(lastCoor.latitude); lastLoc.setLongitude(lastCoor.longitude);
-
-                    float dist = le.distanceTo(lastLoc);
-                    if(dist < 3f) {
-                        continue;
-                    }
-                    totDistTravelled += dist;
-                    ArrayList<LatLng> tmp = curGotPosition.getValue();
-                    tmp.add(pos);
-                    curGotPosition.postValue(tmp);
-                }
-                Log.i(TAG, "onLocationResult: mutSize "+curGotPosition.getValue().size());
-                mNotificationBuilder.setContentText(distanceFormat(totDistTravelled));
-                mNotificationManager.notify(1, mNotificationBuilder.build());
-                distInMetre.postValue(totDistTravelled);
+                addLocationToList(le);
             }
         }
     };
 
+    private void addLocationToList(Location le) {
+        double lat = le.getLatitude(), lng = le.getLongitude();
+        LatLng pos = new LatLng(lat, lng);
+        Log.i(TAG, "service onLocationResult: "+lat+"+"+lng);
+        if( !locationViewModel.isCoorListEmpty() ){
+            LatLng lastCoor = locationViewModel.getLastCoordinates();
+            Location lastLoc = new Location("");
+            lastLoc.setLatitude(lastCoor.latitude);
+            lastLoc.setLongitude(lastCoor.longitude);
+
+            float dist = le.distanceTo(lastLoc);
+            if(dist < 3f) {
+                return;
+            }
+            totDistTravelled += dist;
+        }
+        locationViewModel.addLatLng(pos);
+        mNotificationBuilder.setContentText(distanceFormat(totDistTravelled));
+        mNotificationManager.notify(1, mNotificationBuilder.build());
+        locationViewModel.setDistInMetre(totDistTravelled);
+    }
 
 }

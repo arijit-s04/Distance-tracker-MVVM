@@ -10,6 +10,7 @@ import android.view.animation.AnimationUtils;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.arijit.firebase.walker.databinding.ActivitySplashBinding;
+import com.android.arijit.firebase.walker.utils.FirebaseUtil;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
@@ -49,7 +50,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(FirebaseHelper.isVerifiedUser()) {
+                if(FirebaseUtil.isVerifiedUser()) {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 }
                 else{

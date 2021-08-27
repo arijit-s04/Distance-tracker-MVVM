@@ -9,7 +9,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="com.android.arijit.firebase.walker.LoginFragment"
+        android:name="com.android.arijit.firebase.walker.views.LoginFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

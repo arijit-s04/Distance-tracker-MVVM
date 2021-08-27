@@ -10,4 +10,8 @@
     <string name="cancel">Cancel</string>
     <string name="tag">A simple way to keep track of your path</string>
     <string name="title_activity_splash">FullscreenActivity</string>
+    <string name="end">End</string>
+    <string name="start">Start</string>
+    <string name="error_fetch">Something went wrong</string>
+    <string name="error_save">Unable to save data</string>
 </resources>
