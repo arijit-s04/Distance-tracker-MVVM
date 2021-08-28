@@ -27,7 +27,6 @@ import com.google.android.material.snackbar.Snackbar;
 public class MainActivity extends AppCompatActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemReselectedListener,
         OnFirebaseResultListener {
-    private final String TAG = "MainActivity";
     boolean isVirgin = false;
     private ActivityMainBinding binding;
     public final static String THEME_KEY = "theme";
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if(isVirgin){
             getIntent().removeExtra(VIRGIN);
-            Snackbar.make(binding.navigation, "Login Successful", Snackbar.LENGTH_SHORT)
+            Snackbar.make(binding.navigation, getString(R.string.login_success), Snackbar.LENGTH_SHORT)
                     .setAnchorView(binding.navigation)
                     .show();
         }
@@ -114,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements
                 if(fm.getBackStackEntryCount() > 0){
                     fm.popBackStack();
                 }
-                fragment = SettingsFragment.newInstance(null, null);
+                fragment = new SettingsFragment();
                 break;
             default:
                 fragment = null;

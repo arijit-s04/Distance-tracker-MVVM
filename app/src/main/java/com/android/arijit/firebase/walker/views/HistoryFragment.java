@@ -144,9 +144,9 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback,
             mMap.moveCamera(
                     CameraUpdateFactory.newCameraPosition(
                             CameraPosition.builder()
-                                    .target(end)
-                                    .zoom(SettingsFragment.DEFAULT_ZOOM)
-                                    .build()
+                                .target(end)
+                                .zoom(SettingsFragment.DEFAULT_ZOOM)
+                                .build()
                     )
             );
         }

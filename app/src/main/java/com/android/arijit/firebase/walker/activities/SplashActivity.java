@@ -1,4 +1,4 @@
-package com.android.arijit.firebase.walker;
+package com.android.arijit.firebase.walker.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.arijit.firebase.walker.MainActivity;
+import com.android.arijit.firebase.walker.R;
 import com.android.arijit.firebase.walker.databinding.ActivitySplashBinding;
 import com.android.arijit.firebase.walker.utils.FirebaseUtil;
 import com.google.firebase.auth.FirebaseAuth;

@@ -7,6 +7,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="gps_not_enabled">Please enable location services for app to work properly</string>
     <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="tag">A simple way to keep track of your path</string>
     <string name="title_activity_splash">FullscreenActivity</string>
@@ -14,4 +16,8 @@
     <string name="start">Start</string>
     <string name="error_fetch">Something went wrong</string>
     <string name="error_save">Unable to save data</string>
+    <string name="logout">Logout</string>
+    <string name="logout_warning">Do you want to logout?</string>
+    <string name="logout_success">Logout Successful</string>
+    <string name="login_success">Login Successful</string>
 </resources>

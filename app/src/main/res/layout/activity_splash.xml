@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/green_300"
     android:theme="@style/ThemeOverlay.Walker.FullscreenContainer"
-    tools:context=".SplashActivity">
+    tools:context=".activities.SplashActivity">
     <ImageView
         android:id="@+id/splash_logo"
         android:layout_width="250dp"
