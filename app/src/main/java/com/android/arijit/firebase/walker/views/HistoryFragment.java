@@ -12,6 +12,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.arijit.firebase.walker.R;
@@ -23,6 +24,7 @@ import com.android.arijit.firebase.walker.interfaces.OnHistoryItemClickedListene
 import com.android.arijit.firebase.walker.models.ResultData;
 import com.android.arijit.firebase.walker.utils.FirebaseUtil;
 import com.android.arijit.firebase.walker.utils.ViewUtil;
+import com.android.arijit.firebase.walker.viewmodel.HistoryListViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,6 +49,7 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback,
     private GoogleMap mMap;
     private FragmentHistoryBinding binding;
     private OnFirebaseResultListener firebaseResultListener;
+    private HistoryListViewModel viewModel;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -68,15 +71,23 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback,
         // Inflate the layout for this fragment
         binding = FragmentHistoryBinding.inflate(inflater, container, false);
         initialize(savedInstanceState);
-        setObservers();
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        FirebaseUtil.fetchData(requireContext(), this);
+        viewModel = new ViewModelProvider(requireActivity()).get(HistoryListViewModel.class);
+        viewModel.getHistoryLiveList(this).observe(requireActivity(), resultData -> {
+            resultDataArrayList = resultData;
+            binding.recView.setVisibility(View.VISIBLE);
+            if(resultDataArrayList != null) {
+                ResultDataAdapter mAdapter = new ResultDataAdapter(getContext(),
+                        resultDataArrayList, HistoryFragment.this, this.firebaseResultListener);
+                binding.recView.setAdapter(mAdapter);
+            }
+        });
+//        FirebaseUtil.fetchData(requireContext(), this);
     }
 
     private void handleBackPress() {
@@ -110,17 +121,17 @@ public class HistoryFragment extends Fragment implements OnMapReadyCallback,
         binding.mapPopupContainer.historyMapView.getMapAsync(this);
     }
 
-    private void setObservers() {
-        FirebaseUtil.liveResultData.observe(requireActivity(), resultData -> {
-            resultDataArrayList = resultData;
-            binding.recView.setVisibility(View.VISIBLE);
-            if(resultDataArrayList != null){
-                ResultDataAdapter mAdapter = new ResultDataAdapter(getContext(),
-                        resultDataArrayList, HistoryFragment.this, this.firebaseResultListener);
-                binding.recView.setAdapter(mAdapter);
-            }
-        });
-    }
+//    private void setObservers() {
+//        FirebaseUtil.liveResultData.observe(requireActivity(), resultData -> {
+//            resultDataArrayList = resultData;
+//            binding.recView.setVisibility(View.VISIBLE);
+//            if(resultDataArrayList != null){
+//                ResultDataAdapter mAdapter = new ResultDataAdapter(getContext(),
+//                        resultDataArrayList, HistoryFragment.this, this.firebaseResultListener);
+//                binding.recView.setAdapter(mAdapter);
+//            }
+//        });
+//    }
 
     @Override
     public void onHistoryItemClicked(int position) {

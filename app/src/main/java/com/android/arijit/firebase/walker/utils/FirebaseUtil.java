@@ -3,12 +3,14 @@ package com.android.arijit.firebase.walker.utils;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.lifecycle.MutableLiveData;
+import androidx.annotation.Nullable;
 
 import com.android.arijit.firebase.walker.R;
+import com.android.arijit.firebase.walker.applications.App;
 import com.android.arijit.firebase.walker.interfaces.OnDataFetchedListener;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.models.ResultData;
+import com.android.arijit.firebase.walker.viewmodel.HistoryListViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
@@ -21,7 +23,6 @@ import java.util.Objects;
 
 public class FirebaseUtil {
     private static final String TAG = "FirebaseUtil";
-    public static MutableLiveData<ArrayList<ResultData>> liveResultData = new MutableLiveData<>();
     final static String DATE = "date",
             TIME = "time",
             DISTANCE = "distance",
@@ -30,7 +31,7 @@ public class FirebaseUtil {
             HISTORY_COLLECTION = "travel_history",
             USER = "user";
 
-    public static void storeData(Context context, ResultData data, OnFirebaseResultListener listener){
+    public static void storeData(ResultData data, HistoryListViewModel historyListViewModel, OnFirebaseResultListener listener){
         FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -51,14 +52,18 @@ public class FirebaseUtil {
 
         mFirestore.collection(HISTORY_COLLECTION)
                 .add(toPut)
+                .addOnCompleteListener(task -> {
+                    data.setId(task.getResult().getId());
+                    historyListViewModel.addResultData(data);
+                })
                 .addOnFailureListener(error -> {
-                    listener.onFirebaseResult(context.getString(R.string.error_save));
+                    listener.onFirebaseResult(App.getContext().getString(R.string.error_save));
                     Log.i(TAG, "storeData: failure "+ error.getMessage());
                 });
     }
 
     @SuppressWarnings("unchecked")
-    public static void fetchData(final Context context, final OnDataFetchedListener listener){
+    public static void fetchData(final HistoryListViewModel historyViewModel,@Nullable final OnDataFetchedListener listener){
         FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -69,7 +74,6 @@ public class FirebaseUtil {
             email = "email";
         }
         ArrayList<ResultData> fetchedData = new ArrayList<>();
-        liveResultData.setValue(fetchedData);
 
         mFirestore.collection(HISTORY_COLLECTION)
                 .orderBy(SERVER_TIME)
@@ -83,6 +87,7 @@ public class FirebaseUtil {
                             res.setId(docSnap.getId());
                             res.setDate(docSnap.getString(DATE));
                             res.setTime(docSnap.getString(TIME));
+                            Log.i(TAG, "fetchData: "+res.getId()+" "+res.getDate()+" "+res.getTime());
                             res.setDistanceTravelled(Float.parseFloat(Objects.requireNonNull(docSnap.get(DISTANCE)).toString()));
                             ArrayList<Object> tmp = (ArrayList<Object>) docSnap.get(TRAVEL_COORDINATES);
                             ArrayList<LatLng> toPutInRes = new ArrayList<>();
@@ -99,11 +104,11 @@ public class FirebaseUtil {
 
                             fetchedData.add(res);
                         }
-                        listener.onDataFetched(null);
-                        liveResultData.postValue(fetchedData);
+                        if(listener != null )   listener.onDataFetched(null);
+                        historyViewModel.setHistoryLiveList(fetchedData);
                     }
                     else{
-                        listener.onDataFetched(context.getString(R.string.error_fetch));
+                        if(listener != null )   listener.onDataFetched(App.getContext().getString(R.string.error_fetch));
                         Log.i(TAG, "storeData: failure "+ Objects.requireNonNull(task.getException()).getMessage());
                     }
                 });
@@ -112,7 +117,6 @@ public class FirebaseUtil {
 
     public static void deleteData(Context context, String id, OnFirebaseResultListener listener){
         FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
-
         mFirestore.collection(HISTORY_COLLECTION)
                 .document(id)
                 .delete()
