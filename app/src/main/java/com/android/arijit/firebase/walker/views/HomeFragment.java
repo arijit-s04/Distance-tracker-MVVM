@@ -1,10 +1,12 @@
 package com.android.arijit.firebase.walker.views;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -60,6 +62,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     public static String TAG = "HomeFragment";
     private OnFirebaseResultListener firebaseResultListener;
+    private ValueAnimator valueAnimator;
 
     public HomeFragment() {
     }
@@ -116,15 +119,27 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
         historyViewModel = new ViewModelProvider(requireActivity()).get(HistoryListViewModel.class);
         historyViewModel.getHistoryLiveList(null);
-
+        if(viewModel.getTrackState())
+            binding.fabAction.setBackgroundTintList(ColorStateList.valueOf(App.getContext().getColor(R.color.stop_red)));
+        valueAnimator = ViewUtil.animatorForFab(binding.fabAction);
         setOnClickListeners();
     }
+
+    private void animateButton(boolean start) {
+        if(start)
+            valueAnimator.start();
+        else
+            valueAnimator.reverse();
+    }
+
 
     private void setOnClickListeners() {
         binding.fabAction.setOnClickListener(v -> {
             if (!viewModel.getTrackState()) {
+                animateButton(true);
                 countDownStart();
             } else {
+                animateButton(false);
                 stopTracking();
             }
         });
@@ -435,7 +450,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     };
     private void getResult(){
         viewModel.saveResult(historyViewModel, this.firebaseResultListener);
-//        historyViewModel.addResultData(viewModel.getResultData());
         /*
          * add firebase above this
          */

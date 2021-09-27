@@ -52,6 +52,7 @@
             app:backgroundTint="@color/fab_blue"
             app:borderWidth="0dp"
             app:tint="@color/white"
+            app:rippleColor="@android:color/transparent"
             android:contentDescription="@string/app_name" />
 
         <androidx.cardview.widget.CardView
