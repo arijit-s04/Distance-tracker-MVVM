@@ -16,6 +16,7 @@
     <color name="gray">#474747</color>
     <color name="fab_blue">#2979FF</color>
     <color name="danger_red">#b00020</color>
+    <color name="stop_red">#f32013</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
     <color name="light_blue_A200">#FF40C4FF</color>
