@@ -23,14 +23,17 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.arijit.firebase.walker.R;
+import com.android.arijit.firebase.walker.applications.App;
 import com.android.arijit.firebase.walker.databinding.FragmentHomeBinding;
 import com.android.arijit.firebase.walker.interfaces.OnFirebaseResultListener;
 import com.android.arijit.firebase.walker.models.ForegroundService;
 import com.android.arijit.firebase.walker.utils.LatLngInterpolator;
 import com.android.arijit.firebase.walker.utils.MarkerAnimation;
 import com.android.arijit.firebase.walker.utils.ViewUtil;
+import com.android.arijit.firebase.walker.viewmodel.HistoryListViewModel;
 import com.android.arijit.firebase.walker.viewmodel.LocationViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -87,6 +90,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private LatLng initLatLng;
     public static int POLYLINE_COLOR;
     private LocationViewModel viewModel;
+    private HistoryListViewModel historyViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -109,6 +113,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
         binding.mapView.onCreate(savedInstanceState);
         binding.mapView.getMapAsync(this);
+
+        historyViewModel = new ViewModelProvider(requireActivity()).get(HistoryListViewModel.class);
+        historyViewModel.getHistoryLiveList(null);
 
         setOnClickListeners();
     }
@@ -239,8 +246,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         if (!viewModel.getTrackState()) {
 
             new Handler().post(() -> {
-                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(App.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(App.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(requireActivity(), wantedPerm, 101);
                 }
                 providerClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
@@ -320,7 +327,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        binding.mapView.onDestroy();
+//        binding.mapView.onDestroy();
     }
 
     @Override
@@ -427,7 +434,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
     };
     private void getResult(){
-        viewModel.saveResult(requireContext(), this.firebaseResultListener);
+        viewModel.saveResult(historyViewModel, this.firebaseResultListener);
+//        historyViewModel.addResultData(viewModel.getResultData());
         /*
          * add firebase above this
          */

@@ -1,69 +1,39 @@
 package com.android.arijit.firebase.walker.views;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.android.arijit.firebase.walker.AccountActivity;
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
+
+import com.android.arijit.firebase.walker.MainActivity;
+import com.android.arijit.firebase.walker.activities.AccountActivity;
 import com.android.arijit.firebase.walker.R;
+import com.android.arijit.firebase.walker.databinding.FragmentSettiingsBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.Objects;
+
 public class SettingsFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public SettingsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SettingsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SettingsFragment newInstance(String param1, String param2) {
-        SettingsFragment fragment = new SettingsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @SuppressLint("DefaultLocale")
     public static String distanceFormat(float d){
         String ret = "Distance travelled : ";
         if (SYSTEM_UNIT == 0) {
@@ -83,15 +53,12 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+//        if (getArguments() != null) {}
 
-        getActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                ((BottomNavigationView)getActivity().findViewById(R.id.navigation))
+                ((BottomNavigationView)requireActivity().findViewById(R.id.navigation))
                         .setSelectedItemId(R.id.navigation_home);
             }
         });
@@ -100,95 +67,75 @@ public class SettingsFragment extends Fragment {
     public static int SYSTEM_THEME = 0;
     public static int SYSTEM_UNIT = 0;
     public static String SH = "Settings Preference";
-    /**
+    /*
      * tags for settings
      * @param inflater
      * @param container
      * @param savedInstanceState
      * @return
      */
-    private String TAG = "SettingsFragment";
+    private static final String TAG = "SettingsFragment";
     public static float CAMERA_ZOOM=16;
     public static float CAMERA_TILT=0;
     public static float CAMERA_BEARING=0;
     public static final float DEFAULT_ZOOM = 16f;
     public static final int DEFAULT_COUNT_DOWN = 3;
+    public final static String LOGOUT_KEY = "logout";
 
-    private AutoCompleteTextView myDropDwn;
-    private AutoCompleteTextView myDropDwn2;
-    private String[] themes = {"System", "Light", "Dark"};
-    private String[] unit = {"km/m", "miles"};
-    private TextView tvname, tvemail;
-
+    private final String[] themes = {"System", "Light", "Dark"};
+    private final String[] unit = {"km/m", "miles"};
+    private FragmentSettiingsBinding binding;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_settiings, container, false);
+        binding = FragmentSettiingsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        myDropDwn= (AutoCompleteTextView) root.findViewById(R.id.autoCompleteTextView2);
-        myDropDwn2 = (AutoCompleteTextView) root.findViewById(R.id.autoCompleteTextView4);
-        tvemail = root.findViewById(R.id.tv_email);
-        tvname = root.findViewById(R.id.tv_name);
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-        tvname.setText(mAuth.getCurrentUser().getDisplayName());
-        tvemail.setText(mAuth.getCurrentUser().getEmail());
+        binding.tvName.setText(Objects.requireNonNull(mAuth.getCurrentUser()).getDisplayName());
+        binding.tvEmail.setText(mAuth.getCurrentUser().getEmail());
+        binding.logout.setOnClickListener(v->
+            new AlertDialog.Builder(requireContext())
+                .setTitle(requireContext().getString(R.string.logout))
+                .setMessage(requireContext().getString(R.string.logout_warning))
+                .setPositiveButton(requireContext().getString(R.string.yes), (dialog, which) -> {
+                    resetSettings();
+                    mAuth.signOut();
+                    requireActivity().startActivity(new Intent(requireContext(), AccountActivity.class).putExtra(LOGOUT_KEY, true));
+                    requireActivity().finish();
+                })
+                .setNegativeButton(requireContext().getString(R.string.no), null)
+                .create().show()
+        );
 
         currSettingsHint();
 
-        ((Button) root.findViewById(R.id.logout)).setOnClickListener(
-                v -> {
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("Logout")
-                            .setMessage("Do you want to logout?")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    resetSettings();
-                                    mAuth.signOut();
-                                    getActivity().startActivity(new Intent(getContext(), AccountActivity.class).putExtra("logout", true));
-                                    getActivity().finish();
-                                }
-                            })
-                            .setNegativeButton("No", null)
-                            .create().show();
-
-
-                }
-        );
-
-        return root;
     }
+
     private void currSettingsHint(){
-       myDropDwn.setText(themes[SYSTEM_THEME]);
-       myDropDwn2.setText(unit[SYSTEM_UNIT]);
+       binding.autoCompleteTextView2.setText(themes[SYSTEM_THEME]);
+       binding.autoCompleteTextView4.setText(unit[SYSTEM_UNIT]);
     }
 
     @Override
     public void onResume() {
-        ArrayAdapter<String>myAdapter = new ArrayAdapter<String>(getContext(),
+        ArrayAdapter<String>myAdapter = new ArrayAdapter<>(requireContext(),
                 R.layout.themes_dropdown, themes);
         myAdapter.setDropDownViewResource(R.layout.themes_dropdown);
-        myDropDwn.setAdapter(myAdapter);
-        myDropDwn.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                setTheme(position);
-            }
-        });
+        binding.autoCompleteTextView2.setAdapter(myAdapter);
+        binding.autoCompleteTextView2.setOnItemClickListener((parent, view, position, id) -> setTheme(position));
 
-        ArrayAdapter<String>myAdapter2 = new ArrayAdapter<String>(getContext(),
+        ArrayAdapter<String>myAdapter2 = new ArrayAdapter<>(requireContext(),
                 R.layout.themes_dropdown, unit);
         myAdapter.setDropDownViewResource(R.layout.themes_dropdown);
-        myDropDwn2.setAdapter(myAdapter2);
-        myDropDwn2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                setUnit(position);
-            }
-        });
+        binding.autoCompleteTextView4.setAdapter(myAdapter2);
+        binding.autoCompleteTextView4.setOnItemClickListener((parent, view, position, id) -> setUnit(position));
         super.onResume();
     }
 
@@ -213,28 +160,28 @@ public class SettingsFragment extends Fragment {
         }
 
         SYSTEM_THEME = themeID;
-        SharedPreferences.Editor shEditor = getActivity()
+        SharedPreferences.Editor shEditor = requireActivity()
                 .getSharedPreferences(SH, Context.MODE_PRIVATE)
                 .edit();
-        shEditor.putInt("theme", themeID);
-        shEditor.commit();
+        shEditor.putInt(MainActivity.THEME_KEY, themeID);
+        shEditor.apply();
     }
 
     private void setUnit(int unitID){
         SYSTEM_UNIT = unitID;
-        SharedPreferences.Editor shEditor = getActivity()
+        SharedPreferences.Editor shEditor = requireActivity()
                 .getSharedPreferences(SH, Context.MODE_PRIVATE)
                 .edit();
-        shEditor.putInt("unit", unitID);
-        shEditor.commit();
+        shEditor.putInt(MainActivity.UNIT_KEY, unitID);
+        shEditor.apply();
     }
     public void resetSettings(){
         SettingsFragment.SYSTEM_THEME = 0;
         SettingsFragment.SYSTEM_UNIT = 0;
-        getActivity().getSharedPreferences(SettingsFragment.SH, Context.MODE_PRIVATE).edit()
-                .putInt("theme", SettingsFragment.SYSTEM_THEME)
-                .putInt("unit", SettingsFragment.SYSTEM_UNIT)
-                .commit();
+        requireActivity().getSharedPreferences(SettingsFragment.SH, Context.MODE_PRIVATE).edit()
+                .putInt(MainActivity.THEME_KEY, SettingsFragment.SYSTEM_THEME)
+                .putInt(MainActivity.UNIT_KEY, SettingsFragment.SYSTEM_UNIT)
+                .apply();
         int nightMode;
         switch (SettingsFragment.SYSTEM_THEME){
             case 1:

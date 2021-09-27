@@ -1,7 +1,5 @@
 package com.android.arijit.firebase.walker.viewmodel;
 
-import android.content.Context;
-
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableFloat;
 import androidx.lifecycle.LiveData;
@@ -14,7 +12,6 @@ import com.android.arijit.firebase.walker.utils.FirebaseUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.Objects;
 
 public class LocationViewModel extends ViewModel {
@@ -80,11 +77,11 @@ public class LocationViewModel extends ViewModel {
         return resultData;
     }
 
-    public void saveResult(Context context, OnFirebaseResultListener listener) {
+    public void saveResult(HistoryListViewModel historyListViewModel, OnFirebaseResultListener listener) {
         resultData.setDistanceTravelled(this.distInMetre.get());
         resultData.setTravelCoordinates(this.curGotPosition.getValue());
         setDateTime();
-        FirebaseUtil.storeData(context, this.getResultData(), listener);
+        FirebaseUtil.storeData(this.getResultData(), historyListViewModel, listener);
     }
 
     private void setDateTime() {
