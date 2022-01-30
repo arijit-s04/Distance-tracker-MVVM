@@ -1,0 +1,24 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=1E:87:EF:60:77:C5:53:E6:3B:82:C2:46:A9:89:2F:16:A9:60:9E:C1%3Bcom.android.arijit.firebase.walker
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    com.android.arijit.firebase.walker
+
+    SHA-1 certificate fingerprint:
+    1E:87:EF:60:77:C5:53:E6:3B:82:C2:46:A9:89:2F:16:A9:60:9E:C1
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAwVJmg4EUIcGf_b88xQoe_vdqEwk0gNZg</string>
+</resources>

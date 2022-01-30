@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "849701253153",
+    "project_id": "final-year-project-79916",
+    "storage_bucket": "final-year-project-79916.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849701253153:android:da6b9df21523bf4bb5f360",
+        "android_client_info": {
+          "package_name": "com.android.arijit.firebase.walker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849701253153-k4pkmad3or7gpi56gpgcj4fr5iaib724.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSxJgJa-NOZ708rhG3F7fgav7l9M3SLUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849701253153-k4pkmad3or7gpi56gpgcj4fr5iaib724.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

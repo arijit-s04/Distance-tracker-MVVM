@@ -9,6 +9,4 @@
 local.properties
 app/src/test
 app/src/androidTest
-app/google-services.json
-app/src/debug/res/values/google_maps_api.xml
 .idea
